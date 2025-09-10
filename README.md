@@ -30,22 +30,22 @@
 ````
 .
 Diplom_2/
-├── pages/               # Страницы по паттерну Page Object
-│   ├── base_page.py     # Базовые методы (клики, ожидания)
-│   ├── main_page.py     # Главная страница и конструктор
-│   ├── login_page.py    # Страница входа
-│   ├── register_page.py # Страница регистрации
-│   └── profile_page.py  # Личный кабинет
-├── tests/               # E2E-тесты
-│   ├── test_register.py     # Тест регистрации
-│   ├── test_login.py        # Тесты входа
-│   ├── test_navigation.py   # Вкладки конструктора
-│   └── test_order.py        # Сборка и заказ бургера
-├── utils/                 
-│   └── helpers.py           # Генерация email, пароля
-├── conftest.py              # Фикстуры: браузер, URL, авторизация
-├── requirements.txt         # Зависимости
-└── README.md                # Этот файл
+├── api/                      # Клиенты для работы с API
+│   ├── base_client.py        # Базовые методы (allure.step, запросы)
+│   ├── user_client.py        # Регистрация, вход, выход
+│   └── order_client.py       # Создание заказа, получение заказов
+├── tests/                    # E2E-тесты
+│   ├── test_register.py      # Регистрация пользователя
+│   ├── test_login.py         # Авторизация
+│   ├── test_create_order.py  # Создание заказа
+│   └── test_get_orders.py    # Получение списка заказов
+├── utils/                    # Вспомогательные данные
+│   ├── data.py               # URL, тексты
+│   └── helpers.py            # Генерация email, пароля
+├── conftest.py               # Фикстуры: зарегистрированный пользователь
+├── requirements.txt          # Зависимости
+├── allure-results/           # ← будет создана при запуске (НЕ в Git!)
+└── README.md                 # Описание проекта
 ````
 ---
 ## Запуск автотестов
