@@ -30,22 +30,20 @@
 ````
 .
 Diplom_2/
-├── api/                      # Клиенты для работы с API
-│   ├── base_client.py        # Базовые методы (allure.step, запросы)
-│   ├── user_client.py        # Регистрация, вход, выход
-│   └── order_client.py       # Создание заказа, получение заказов
-├── tests/                    # E2E-тесты
-│   ├── test_register.py      # Регистрация пользователя
-│   ├── test_login.py         # Авторизация
-│   ├── test_create_order.py  # Создание заказа
-│   └── test_get_orders.py    # Получение списка заказов
-├── utils/                    # Вспомогательные данные
-│   ├── data.py               # URL, тексты
-│   └── helpers.py            # Генерация email, пароля
-├── conftest.py               # Фикстуры: зарегистрированный пользователь
-├── requirements.txt          # Зависимости
-├── allure-results/           # ← будет создана при запуске (НЕ в Git!)
-└── README.md                 # Описание проекта
+├── tests/
+│   ├── test_create_order.py          # Тесты заказов
+│   ├── test_auth.py                  # Тесты авторизации
+│   └── conftest.py                   # Фикстуры
+├── methods/
+│   ├── __init__.py                   # Для импорта методов
+│   ├── auth.py                       # Методы авторизации
+│   ├── order.py                      # Методы заказов
+│   └── user.py                       # Методы пользователя
+├── urls.py                           # Все URL endpoints
+├── http_client.py                    # Базовый HTTP клиент
+├── helpers.py                        # Вспомогательные функции
+├── requirements.txt
+└── README.md
 ````
 ---
 ## Запуск автотестов
