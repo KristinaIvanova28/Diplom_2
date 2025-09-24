@@ -28,23 +28,23 @@
 ---
 ## Структура проекта
 ````
-.
 Diplom_2/
-├── tests/
-│   ├── test_create_order.py          # Тесты заказов
-│   ├── test_auth.py                  # Тесты авторизации
-│   └── conftest.py                   # Фикстуры
-├── methods/
-│   ├── __init__.py                   # Для импорта методов
-│   ├── auth.py                       # Методы авторизации
-│   ├── order.py                      # Методы заказов
-│   └── user.py                       # Методы пользователя
-├── urls.py                           # Все URL endpoints
-├── http_client.py                    # Базовый HTTP клиент
-├── helpers.py                        # Вспомогательные функции
-├── requirements.txt
-└── README.md
-````
+- tests/: Директория с тестами
+  - test_auth.py: Тесты авторизации
+  - test_create_user.py: Тесты создания пользователя
+  - test_create_order.py: Тесты создания заказов
+  - conftest.py: Фикстуры Pytest
+- http_client.py: HTTP клиент для API запросов
+- urls.py: URL endpoints API
+- data.py: Тестовые данные
+  - methods/:
+  - user.py: Методы для работы с пользователем
+  - order.py: Методы для работы с заказами
+  - auth.py: Методы авторизации
+- allure-results/: Результаты Allure тестов (генерируется)
+- allure-report/: HTML отчет Allure (генерируется)
+- requirements.txt: Зависимости проекта
+- README.md
 ---
 ## Запуск автотестов
 

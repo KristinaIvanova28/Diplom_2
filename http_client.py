@@ -1,14 +1,25 @@
 import requests
+import allure
+
 
 class HttpClient:
-    def post(self, url, data=None, json=None, headers=None):
-        return requests.post(url, data=data, json=json, headers=headers)
+    """HTTP клиент в стиле Ильи - простой и эффективный"""
     
-    def get(self, url, headers=None):
-        return requests.get(url, headers=headers)
+    def __init__(self, base_url):
+        self.base_url = base_url
+        self.session = requests.Session()
     
-    def delete(self, url, headers=None):
-        return requests.delete(url, headers=headers)
+    @allure.step("POST {path}")
+    def post(self, path, json=None, headers=None):
+        url = f"{self.base_url}{path}"
+        return self.session.post(url, json=json, headers=headers)
     
-    def patch(self, url, data=None, json=None, headers=None):
-        return requests.patch(url, data=data, json=json, headers=headers)
+    @allure.step("GET {path}") 
+    def get(self, path, headers=None):
+        url = f"{self.base_url}{path}"
+        return self.session.get(url, headers=headers)
+    
+    @allure.step("DELETE {path}")
+    def delete(self, path, headers=None):
+        url = f"{self.base_url}{path}"
+        return self.session.delete(url, headers=headers)

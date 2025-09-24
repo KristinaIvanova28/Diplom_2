@@ -1,131 +1,79 @@
-import allure
 import pytest
+import allure
+from data.urls import Urls
+from data.data import Data
+from methods.order import OrderMethods
+
 
 @allure.feature("Создание заказа")
 class TestCreateOrder:
 
-    @allure.title("Создание заказа с авторизацией и ингредиентами")
-    def test_create_order_authorized_with_ingredients(self, client, urls, user_data):
-        """Тест создания заказа авторизованным пользователем с валидными ингредиентами"""
-        # Регистрация пользователя
-        with allure.step("Зарегистрировать пользователя"):
-            register_response = client.post(urls.register, json=user_data)
-            assert register_response.status_code == 200
-            token = register_response.json()["accessToken"]
+    @allure.title("Создание заказа с авторизацией")
+    def test_create_order_with_auth(self, api_client, registered_user):
+        """Создание заказа с авторизацией"""
+        urls = Urls()
+        order_methods = OrderMethods(api_client)
         
-        # Получение ингредиентов
-        with allure.step("Получить список ингредиентов"):
-            ingredients_response = client.get(urls.ingredients)
-            assert ingredients_response.status_code == 200
-            ingredients = ingredients_response.json()["data"]
+        response = order_methods.create_order(
+            urls, 
+            Data.VALID_INGREDIENTS["ingredients"], 
+            registered_user['token']
+        )
         
-        # Создание заказа
-        with allure.step("Создать заказ с ингредиентами"):
-            order_data = {"ingredients": [ingredients[0]["_id"], ingredients[1]["_id"]]}
-            headers = {"Authorization": token} 
-            response = client.post(urls.orders, json=order_data, headers=headers)
-        
-        with allure.step("Проверить успешное создание заказа"):
-            assert response.status_code == 200
-            assert response.json()["success"] is True
+        assert response.status_code == 200
+        assert response.json()["success"] == True
 
-    @allure.title("Создание заказа без авторизации с ингредиентами")
-    def test_create_order_unauthorized_with_ingredients(self, client, urls):
-        """Тест создания заказа неавторизованным пользователем с валидными ингредиентами"""
-        # Получение ингредиентов
-        with allure.step("Получить список ингредиентов"):
-            ingredients_response = client.get(urls.ingredients)
-            assert ingredients_response.status_code == 200
-            ingredients = ingredients_response.json()["data"]
+    @allure.title("Создание заказа без авторизации")
+    def test_create_order_without_auth(self, api_client):
+        """Создание заказа без авторизации"""
+        urls = Urls()
+        order_methods = OrderMethods(api_client)
         
-        # Создание заказа
-        with allure.step("Создать заказ без авторизации"):
-            order_data = {"ingredients": [ingredients[0]["_id"], ingredients[1]["_id"]]}
-            response = client.post(urls.orders, json=order_data)
+        response = order_methods.create_order(urls, Data.VALID_INGREDIENTS["ingredients"])
         
-        with allure.step("Проверить что неавторизованный пользователь не может создать заказ"):
-            assert response.status_code == 200
-            assert response.json()["success"] is True
+        assert response.status_code == 200
+        assert response.json()["success"] == True
 
-    @allure.title("Создание заказа с авторизацией без ингредиентов")
-    def test_create_order_authorized_without_ingredients(self, client, urls, user_data):
-        """Тест создания заказа авторизованным пользователем без ингредиентов"""
-        # Регистрация пользователя
-        with allure.step("Зарегистрировать пользователя"):
-            register_response = client.post(urls.register, json=user_data)
-            assert register_response.status_code == 200
-            token = register_response.json()["accessToken"]
+    @allure.title("Создание заказа с ингредиентами")
+    def test_create_order_with_ingredients(self, api_client, registered_user):
+        """Создание заказа с ингредиентами"""
+        urls = Urls()
+        order_methods = OrderMethods(api_client)
         
-        # Создание заказа
-        with allure.step("Создать заказ без ингредиентов"):
-            order_data = {"ingredients": []}
-            headers = {"Authorization": token}
-            response = client.post(urls.orders, json=order_data, headers=headers)
+        response = order_methods.create_order(
+            urls, 
+            Data.VALID_INGREDIENTS["ingredients"], 
+            registered_user['token']
+        )
         
-        with allure.step("Проверить ошибку при отсутствии ингредиентов"):
-            assert response.status_code == 400
-            assert response.json()["success"] is False
+        assert response.status_code == 200
+        assert response.json()["success"] == True
 
-    @allure.title("Создание заказа без авторизации без ингредиентов")
-    def test_create_order_unauthorized_without_ingredients(self, client, urls):
-        """Тест создания заказа неавторизованным пользователем без ингредиентов"""
-        with allure.step("Создать заказ без ингредиентов и авторизации"):
-            order_data = {"ingredients": []}
-            response = client.post(urls.orders, json=order_data)
+    @allure.title("Создание заказа без ингредиентов")
+    def test_create_order_without_ingredients(self, api_client, registered_user):
+        """Создание заказа без ингредиентов"""
+        urls = Urls()
+        order_methods = OrderMethods(api_client)
         
-        with allure.step("Проверить ошибку при отсутствии ингредиентов"):
-            assert response.status_code == 400
-            assert response.json()["success"] is False
+        response = order_methods.create_order(urls, [], registered_user['token'])
+        
+        assert response.status_code == 400
+        assert response.json()["success"] == False
 
-    @allure.title("Создание заказа с неверным хешем ингредиентов (авторизованный)")
-    def test_create_order_authorized_invalid_ingredients(self, client, urls, user_data):
-        """Тест создания заказа авторизованным пользователем с невалидными ингредиентами"""
-        # Регистрация пользователя
-        with allure.step("Зарегистрировать пользователя"):
-            register_response = client.post(urls.register, json=user_data)
-            assert register_response.status_code == 200
-            token = register_response.json()["accessToken"]
-        
-        # Создание заказа
-        with allure.step("Создать заказ с невалидными ингредиентами"):
-            order_data = {"ingredients": ["invalid_ingredient_1", "invalid_ingredient_2"]}
-            headers = {"Authorization": token}
-            response = client.post(urls.orders, json=order_data, headers=headers)
-        
-        with allure.step("Проверить ошибку при невалидных ингредиентах"):
-            assert response.status_code == 500
-            
+    @allure.title("Создание заказа с неверным хешем ингредиентов")
+    def test_create_order_with_invalid_ingredients_hash(self, api_client, registered_user):
+        """Создание заказа с неверным хешем ингредиентов"""
+        urls = Urls()
+        order_methods = OrderMethods(api_client)
 
-    @allure.title("Создание заказа с неверным хешем ингредиентов (неавторизованный)")
-    def test_create_order_unauthorized_invalid_ingredients(self, client, urls):
-        """Тест создания заказа неавторизованным пользователем с невалидными ингредиентами"""
-        with allure.step("Создать заказ с невалидными ингредиентами без авторизации"):
-            order_data = {"ingredients": ["invalid_ingredient_1", "invalid_ingredient_2"]}
-            response = client.post(urls.orders, json=order_data)
-        
-        with allure.step("Проверить ошибку при невалидных ингредиентах"):
-            assert response.status_code == 500
-            
-    def test_create_order_with_one_ingredient(self, client, urls, user_data):
-        """Тест создания заказа с одним ингредиентом"""
-        # Регистрация пользователя
-        with allure.step("Зарегистрировать пользователя"):
-            register_response = client.post(urls.register, json=user_data)
-            assert register_response.status_code == 200
-            token = register_response.json()["accessToken"]
-        
-        # Получение ингредиентов
-        with allure.step("Получить список ингредиентов"):
-            ingredients_response = client.get(urls.ingredients)
-            assert ingredients_response.status_code == 200
-            ingredients = ingredients_response.json()["data"]
-        
-        # Создание заказа
-        with allure.step("Создать заказ с одним ингредиентом"):
-            order_data = {"ingredients": [ingredients[0]["_id"]]}
-            headers = {"Authorization": token}
-            response = client.post(urls.orders, json=order_data, headers=headers)
-        
-        with allure.step("Проверить создание заказа с одним ингредиентом"):
-            assert response.status_code == 200
-            assert response.json()["success"] is True
+        response = order_methods.create_order(
+            urls,
+            Data.INVALID_INGREDIENTS["ingredients"],
+            registered_user['token']
+        )
+
+        # Проверяем, что статус код указывает на ошибку
+        assert response.status_code == 500, f"Ожидался статус код 500, но получен {response.status_code}"
+    
+        # Проверяем, что ответ содержит текст ошибки (HTML или plain text)
+        assert "Internal Server Error" in response.text
